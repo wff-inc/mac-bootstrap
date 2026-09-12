@@ -26,7 +26,7 @@ check)
   fdesetup status 2>/dev/null | grep -q On && echo "filevault=on" || echo "filevault=off"
   /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate 2>/dev/null | grep -q enabled && echo "firewall=on" || echo "firewall=off"
   [ -d /Applications/LINE.app ] && echo "line=yes" || echo "line=no"
-  ps -axo command 2>/dev/null | grep -q '^/Volumes/[^ ]*Claude.app' && echo "claude_from_dmg=yes" || echo "claude_from_dmg=no"
+  ps -U "$USER" -o command 2>/dev/null | grep -q '^/Volumes/[^ ]*Claude.app' && echo "claude_from_dmg=yes" || echo "claude_from_dmg=no"   # 自分のユーザーの起動分だけ見る
   [ -d "/Applications/Claude.app" ] && echo "claude_in_applications=yes" || echo "claude_in_applications=no"
   ;;
 fix-claude-app)
