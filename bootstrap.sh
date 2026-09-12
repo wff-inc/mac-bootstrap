@@ -5,8 +5,14 @@
 # 管理者から読み取り専用トークンを渡された場合（GitHubアカウント不要）:
 #   curl -fsSL https://raw.githubusercontent.com/wff-inc/mac-bootstrap/main/bootstrap.sh | WFF_TOKEN=xxxx bash
 set -eu
-# パイプで実行された時も、質問への入力（Enterやパスワード）がキーボードから届くようにする
-if [ ! -t 0 ] && [ -r /dev/tty ]; then exec </dev/tty; fi
+# curl | bash で実行された時は、自分自身をファイルに保存し直してから実行する。
+# こうすると bash は命令をファイルから読み、質問への入力（Enterやパスワード）はキーボードから届く。
+SELF_URL="https://raw.githubusercontent.com/wff-inc/mac-bootstrap/main/bootstrap.sh"
+if [ ! -t 0 ] && [ -r /dev/tty ]; then
+  TMP="$(mktemp /tmp/wff-bootstrap.XXXXXX)"
+  curl -fsSL "$SELF_URL" -o "$TMP"
+  exec bash "$TMP" </dev/tty
+fi
 echo "== WFF Mac セットアップを開始します =="
 # 1. Xcode Command Line Tools（gitに必要。未導入なら案内ダイアログが出る）
 if ! xcode-select -p >/dev/null 2>&1; then
