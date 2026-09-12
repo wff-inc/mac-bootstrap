@@ -9,7 +9,7 @@ WFF Inc. 社用Macセットアップの「入口」です。中身は `bootstrap
 新しいMacのターミナルで次の1行を実行します。
 
 ```
-bash <(curl -fsSL https://raw.githubusercontent.com/wff-inc/mac-bootstrap/main/bootstrap.sh)
+curl -fsSL https://raw.githubusercontent.com/wff-inc/mac-bootstrap/main/bootstrap.sh | bash
 ```
 
 このリポジトリには会社の内部情報・パスワード・トークンは一切含まれていません。

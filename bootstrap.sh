@@ -1,10 +1,12 @@
 #!/bin/bash
 # WFF Inc. Mac ブートストラップ（公開用・内部情報を含めない）
 # 新Macで最初に実行する1行:
-#   bash <(curl -fsSL https://raw.githubusercontent.com/wff-inc/mac-bootstrap/main/bootstrap.sh)
+#   curl -fsSL https://raw.githubusercontent.com/wff-inc/mac-bootstrap/main/bootstrap.sh | bash
 # 管理者から読み取り専用トークンを渡された場合（GitHubアカウント不要）:
-#   WFF_TOKEN=xxxx bash <(curl -fsSL https://raw.githubusercontent.com/wff-inc/mac-bootstrap/main/bootstrap.sh)
+#   curl -fsSL https://raw.githubusercontent.com/wff-inc/mac-bootstrap/main/bootstrap.sh | WFF_TOKEN=xxxx bash
 set -eu
+# パイプで実行された時も、質問への入力（Enterやパスワード）がキーボードから届くようにする
+if [ ! -t 0 ] && [ -r /dev/tty ]; then exec </dev/tty; fi
 echo "== WFF Mac セットアップを開始します =="
 # 1. Xcode Command Line Tools（gitに必要。未導入なら案内ダイアログが出る）
 if ! xcode-select -p >/dev/null 2>&1; then
