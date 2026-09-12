@@ -1,6 +1,6 @@
 #!/bin/bash
 # WFF Inc. Mac セットアップ（Claude Code 実行用）。ターミナルを使わず、必要な入力は macOS のダイアログで行う。
-# 使い方: bash ~/.wff/claude-setup.sh <check|admin|repo|repo-wait|install|line|doctor>
+# 使い方: bash ~/.wff/claude-setup.sh <check|fix-claude-app|admin|repo|repo-wait|install|browser|line|doctor>
 set -u
 export LANG="${LANG:-ja_JP.UTF-8}" LC_ALL="${LC_ALL:-ja_JP.UTF-8}" WFF_GUI=1
 W="$HOME/.wff"; mkdir -p "$W"; chmod 700 "$W"
@@ -26,6 +26,33 @@ check)
   fdesetup status 2>/dev/null | grep -q On && echo "filevault=on" || echo "filevault=off"
   /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate 2>/dev/null | grep -q enabled && echo "firewall=on" || echo "firewall=off"
   [ -d /Applications/LINE.app ] && echo "line=yes" || echo "line=no"
+  ps -axo command 2>/dev/null | grep -q '^/Volumes/[^ ]*Claude.app' && echo "claude_from_dmg=yes" || echo "claude_from_dmg=no"
+  [ -d "/Applications/Claude.app" ] && echo "claude_in_applications=yes" || echo "claude_in_applications=no"
+  ;;
+fix-claude-app)
+  # Claude を取り込み用ディスク（.dmg）から直接起動している場合、アプリケーションフォルダにコピーする（ディスクの取り出しは本人が後で行う）
+  if [ -d "/Applications/Claude.app" ]; then ok "Claude はアプリケーションフォルダにあります"; exit 0; fi
+  SRC="$(ls -d /Volumes/*/Claude.app 2>/dev/null | head -1)"
+  [ -n "$SRC" ] || { warn "取り込み用ディスクに Claude が見つかりません"; exit 0; }
+  cp -R "$SRC" /Applications/ && ok "Claude をアプリケーションフォルダにコピーしました（作業後にアプリケーションフォルダから起動し直してもらう）"
+  ;;
+browser)
+  # 既定ブラウザを Chrome に（macOSの確認ダイアログで本人が押す）
+  CUR="$(python3 - <<'PY' 2>/dev/null
+import plistlib,os
+p=os.path.expanduser('~/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist')
+try:
+    d=plistlib.load(open(p,'rb'))
+    for h in d.get('LSHandlers',[]):
+        if h.get('LSHandlerURLScheme')=='http': print(h.get('LSHandlerRoleAll','')); break
+    else: print('')
+except Exception: print('')
+PY
+)"
+  if [ "$CUR" = "com.google.chrome" ]; then ok "既定ブラウザは既に Chrome"; exit 0; fi
+  [ -d "/Applications/Google Chrome.app" ] || { warn "Chrome が未導入"; exit 0; }
+  open -a "Google Chrome" --args --make-default-browser
+  echo "WAITING 既定ブラウザの確認ダイアログが出ます。「“Google Chrome”を使用」を押してもらってください"
   ;;
 admin)
   A="$W/admin-phase.sh"
@@ -97,5 +124,5 @@ doctor)
   [ -f "$DEST/doctor.sh" ] || { fail "本体がありません"; exit 1; }
   bash "$DEST/doctor.sh"; echo "report=$HOME/Library/Logs/wff-doctor.md"
   ;;
-*) echo "usage: claude-setup.sh <check|admin|repo|repo-wait|install|line|doctor>"; exit 2;;
+*) echo "usage: claude-setup.sh <check|fix-claude-app|admin|repo|repo-wait|install|browser|line|doctor>"; exit 2;;
 esac
