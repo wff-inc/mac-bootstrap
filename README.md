@@ -1,15 +1,24 @@
-# mac-bootstrap
+# mac-bootstrap — WFF Inc. 社用Macセットアップの入口
 
-WFF Inc. 社用Macセットアップの「入口」です。中身は `bootstrap.sh` 1本だけで、次のことしかしません。
+新メンバーが **ターミナルを一度も開かずに** 会社標準の環境を整えるための入口です。
 
-1. Xcode Command Line Tools と Homebrew を入れる
-2. 本体（非公開リポジトリ）を取得する
-3. 本体の `setup.sh` を実行する
+## 新メンバーの手順（5ステップ）
+1. https://claude.ai/download から Claude をダウンロードし、アプリケーションフォルダに入れて起動
+2. 「Googleでログイン」（会社のGoogleアカウント）
+3. 左の **Code** タブを開き、フォルダは「デスクトップ」を選ぶ
+4. 下の1行を貼って送信
 
-新しいMacのターミナルで次の1行を実行します。
+   ```
+   https://raw.githubusercontent.com/wff-inc/mac-bootstrap/main/CLAUDE_SETUP.md を読んで、その手順どおりにこのMacをセットアップしてください
+   ```
+5. あとは Claude の案内どおりに「許可」を押し、パスワードの窓に1〜2回入力するだけ
 
-```
-curl -fsSL https://raw.githubusercontent.com/wff-inc/mac-bootstrap/main/bootstrap.sh | bash
-```
+## 中身
+| ファイル | 役割 |
+|---|---|
+| `CLAUDE_SETUP.md` | Claude Code が読む手順書（話し方・順番・やってはいけないこと） |
+| `claude-setup.sh` | Claude が段階的に呼ぶ実行役。管理者権限が要る処理は macOS 標準のパスワード窓で行う |
+| `askpass.sh` | アプリ導入時に管理者権限が要る場合、パスワード窓を出す小さな部品 |
+| `bootstrap.sh` | 旧方式（ターミナルで1行実行）。MDM配布用に残している |
 
-このリポジトリには会社の内部情報・パスワード・トークンは一切含まれていません。
+このリポジトリには会社の内部情報・パスワード・トークンは含まれていません。本体（アプリ一覧・設定ファイル）は非公開リポジトリ `wff-inc/mac-setup` にあり、GitHubログインまたは管理者から受け取る「合言葉」で取得します。
