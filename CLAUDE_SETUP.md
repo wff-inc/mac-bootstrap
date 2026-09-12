@@ -21,7 +21,9 @@
 4. LINE：`bash ~/.wff/claude-setup.sh line` を実行。App Store が開くので「『入手』を押してください。Apple ID のサインインを求められたらご自身のIDで進めてください」と伝える。押せない・持っていない場合は飛ばす（インストールのみが標準で、必須ではない）
 5. 検収：`bash ~/.wff/claude-setup.sh doctor` を実行し、結果を読む
    - ❌（要対応）：可能ならその場で直す（アプリが無い→ `brew install --cask ＜名前＞`、設定ファイルが無い→ `bash ~/wff-mac-setup/scripts/apply-dotfiles.sh`）
-   - ⚠️（人が押す）：1つずつ順に案内する。順番：Claude のコネクタ（Notion・Google Drive：Claude の設定 > コネクタ から「接続」）→ Google Drive アプリのログイン（メニューバーのアイコン）→ Slack（招待リンク、「Googleで続行」）→ Zoom（「Googleでサインイン」）→ Codex（`codex login` を実行し、開いたブラウザで許可）→ Antigravity（`agy` を実行し、Googleで許可）。それぞれ「押すもの」だけを伝える
+   - ⚠️（人が押す）：1つずつ順に案内する。順番：Claude のコネクタ（Google Drive：Claude の設定 > コネクタ から「接続」）→ Google Drive アプリのログイン（メニューバーのアイコン）→ Slack（招待リンク、「Googleで続行」）→ Zoom（「Googleでサインイン」）→ Antigravity（`agy` を実行し、Googleで許可）。それぞれ「押すもの」だけを伝える
+   - Codex：相手に「ChatGPT の有料プラン（Plus 以上）のアカウントを持っていますか？」と尋ねる。持っている → `codex login` を実行して開いたブラウザで許可。持っていない → 飛ばし、「AI同士の会議は Claude と Antigravity の2人で行う設定になっています」と伝える（会社ルール）
+   - Notion：会社の Notion には最初は招待されない（会社ルール：長期雇用が確定した時のみ）。相手に「Notion を使う場合は notion.so で『Googleで続行』を押し、自分用の無料プランで始めてください。その後 Claude の設定 > コネクタ で Notion を接続できます」と案内する（任意・後回し可）
 6. 記憶ファイル：相手に「お名前（表示名）」「役割（例：デザイナー）」「パソコンにどのくらい慣れているか」「会社のメールアドレス」を尋ね、`~/Documents/Obsidian Vault/99_System/memory.md` の「自分について」を書き換える。メールアドレスは `git config --global user.email ＜メール＞` にも設定する（名前は `git config --global user.name` が未設定なら設定）
 7. 完了報告：`~/Library/Logs/wff-doctor.md` を要約し、「✅ N件／⚠️ N件（残り：…）／❌ N件」と、残っている項目を箇条書きで相手に見せる。最後に「この内容をスティーブさんにSlackで送ってください」と伝える（検収結果は /Users/Shared/wff-doctor-＜ユーザー名＞.md にも保存されている）。手順0で `claude_from_dmg=yes` だった場合は「Claude を終了し、アプリケーションフォルダの Claude から起動し直してください。デスクトップの『Claude』ディスクは取り出して構いません」も添える
 
