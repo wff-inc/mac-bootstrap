@@ -25,6 +25,7 @@
    - Codex：相手に「ChatGPT の有料プラン（Plus 以上）のアカウントを持っていますか？」と尋ねる。持っている → `codex login` を実行して開いたブラウザで許可。持っていない → 飛ばし、「AI同士の会議は Claude と Antigravity の2人で行う設定になっています」と伝える（会社ルール）
    - Notion：会社の Notion には最初は招待されない（会社ルール：長期雇用が確定した時のみ）。相手に「Notion を使う場合は notion.so で『Googleで続行』を押し、自分用の無料プランで始めてください。その後 Claude の設定 > コネクタ で Notion を接続できます」と案内する（任意・後回し可）
 6. 記憶ファイル：相手に「お名前（表示名）」「役割（例：デザイナー）」「パソコンにどのくらい慣れているか」「会社のメールアドレス」を尋ね、`~/Documents/Obsidian Vault/99_System/memory.md` の「自分について」を書き換える。メールアドレスは `git config --global user.email ＜メール＞` にも設定する（名前は `git config --global user.name` が未設定なら設定）
+6.5 後片付け：手順2で管理者が横で GitHub にログインした場合（本人のGitHubアカウントでない場合）は、`gh auth logout -h github.com` を実行してログイン状態を残さない。取得した本体フォルダ（~/wff-mac-setup）はそのまま残す（再点検に使う）
 7. 完了報告：`~/Library/Logs/wff-doctor.md` を要約し、「✅ N件／⚠️ N件（残り：…）／❌ N件」と、残っている項目を箇条書きで相手に見せる。最後に「この内容をスティーブさんにSlackで送ってください」と伝える（検収結果は /Users/Shared/wff-doctor-＜ユーザー名＞.md にも保存されている）。手順0で `claude_from_dmg=yes` だった場合は「Claude を終了し、アプリケーションフォルダの Claude から起動し直してください。デスクトップの『Claude』ディスクは取り出して構いません」も添える
 
 ## やってはいけないこと
