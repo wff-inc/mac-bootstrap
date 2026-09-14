@@ -66,11 +66,12 @@ echo "== 管理者フェーズ開始 =="
 # Xcode Command Line Tools（無人導入）
 if ! xcode-select -p >/dev/null 2>&1; then
   touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-  L=\$(softwareupdate -l 2>/dev/null | grep -o 'Command Line Tools for Xcode-[0-9.]*' | sort -V | tail -1)
+  # 名称は macOS 26 で「Xcode-15.3」→「Xcode 26.6-26.6」のように変わった。推測せず「Label:」の行をそのまま使う
+  L=\$(softwareupdate -l 2>/dev/null | grep '^\* Label: Command Line Tools' | sed 's/^\* Label: //' | sort -V | tail -1)
   [ -n "\$L" ] && softwareupdate -i "\$L" >/dev/null 2>&1
   rm -f /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
 fi
-xcode-select -p >/dev/null 2>&1 && echo "clt=ok" || echo "clt=missing"
+xcode-select -p >/dev/null 2>&1 && echo "clt=ok" || echo "clt=missing (label='\${L:-見つからず}')"
 # Homebrew（公式 .pkg）
 if [ ! -x /opt/homebrew/bin/brew ]; then
   curl -fsSL -o /tmp/Homebrew.pkg https://github.com/Homebrew/brew/releases/latest/download/Homebrew.pkg && installer -pkg /tmp/Homebrew.pkg -target / >/dev/null 2>&1
@@ -86,10 +87,18 @@ defaults write /Library/Preferences/com.apple.commerce AutoUpdate -bool true && 
 echo "== 管理者フェーズ完了 =="
 ADM
   chmod 700 "$A"
-  admin_run "$A"; rc=$?
+  OUT="$(admin_run "$A")"; rc=$?
   rm -f "$A"
-  [ $rc -eq 0 ] && ok "管理者フェーズ完了" || fail "管理者フェーズが中断されました（パスワード窓をキャンセルした可能性）"
-  exit $rc
+  printf '%s\n' "$OUT"
+  if [ $rc -ne 0 ]; then fail "管理者フェーズが中断されました（パスワード窓をキャンセルした可能性）"; exit $rc; fi
+  # 「完了」と言う前に、中身が本当に入ったかを個別に判定する
+  MISSING=""
+  printf '%s' "$OUT" | grep -q "clt=missing" && MISSING="$MISSING 開発ツール(CLT)"
+  printf '%s' "$OUT" | grep -q "brew=missing" && MISSING="$MISSING Homebrew"
+  printf '%s' "$OUT" | grep -q "firewall=on" || MISSING="$MISSING ファイアウォール"
+  printf '%s' "$OUT" | grep -q "autoupdate=on" || MISSING="$MISSING 自動更新"
+  if [ -n "$MISSING" ]; then fail "管理者フェーズは動いたが未完了の項目あり:${MISSING}（もう一度 admin を実行。駄目なら後回しにして先へ）"; exit 1; fi
+  ok "管理者フェーズ完了（開発ツール・Homebrew・ファイアウォール・自動更新 すべて確認済み）"
   ;;
 repo)
   [ -x /opt/homebrew/bin/brew ] || { fail "Homebrew がありません。先に admin を実行してください"; exit 1; }
